@@ -85,15 +85,15 @@ class Drudje
 	end	
 end
 
-d = Drudje.new
-d.src = "./example"
-d.dest = "./public"
-d.extension = ".html"
-
-file = "index.html"
-full_file = File.join d.src, file
-contents = File.read full_file
-
-res = d.process(contents)
-puts res
-d.write(file, res)
+#d = Drudje.new
+#d.src = "./example"
+#d.dest = "./public"
+#d.extension = ".html"
+#
+#file = "index.html"
+#full_file = File.join d.src, file
+#contents = File.read full_file
+#
+#res = d.process(contents)
+#puts res
+#d.write(file, res)
