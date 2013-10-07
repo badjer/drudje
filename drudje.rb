@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'fileutils'
 
 class Drudje
 	attr_accessor :src, :dest, :extension
@@ -30,7 +31,6 @@ class Drudje
 	end
 
 	def get_args(call_str)
-		#parts = call_str.strip.split(/\s/).drop(1)
 		arg_str = call_str.strip.partition(' ')[2]
 		if is_arg_hash(arg_str)
 			get_arg_hash arg_str
@@ -75,6 +75,14 @@ class Drudje
 		end
 		processed
 	end
+
+	def write(file, str)
+		dest_file = File.join dest, file
+		dest_path = File.dirname dest_file
+		FileUtils.mkdir_p(dest_path) unless File.exists?(dest_path)
+		puts "Writing to " + dest_file
+		File.write dest_file, str
+	end	
 end
 
 d = Drudje.new
@@ -83,7 +91,9 @@ d.dest = "./public"
 d.extension = ".html"
 
 file = "index.html"
-file = File.join d.src, file
-contents = File.read file
+full_file = File.join d.src, file
+contents = File.read full_file
 
-puts d.process(contents)
+res = d.process(contents)
+puts res
+d.write(file, res)
