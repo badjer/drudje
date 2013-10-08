@@ -47,11 +47,11 @@ class Drudje
 	end
 
 	def is_arg_hash(arg_str)
-		arg_str =~ /\A([^ ]+=.+ *)+\z/
+		arg_str =~ /\A([^ ]+=.+[\s\n\r]*)+\z/
 	end
 
 	def get_arg_hash(arg_str)
-		parts = arg_str.scan(/(?:"(?:\\.|[^"])*"|[^" ])+/)
+		parts = arg_str.scan(/(?:"(?:\\.|[^"])*"|[^"\s\n\r])+/)
 		res = {}
 		parts.each{|part|
 			key, eq, val = part.partition('=')
