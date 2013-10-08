@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/drudje.rb'
+src = ARGV[0]
+dest = ARGV[1]
+ext = ARGV[2] || '.html'
+
+puts 'Processing ' + src + '/*' + ext + ' to ' + dest
+d = Drudje.new src, dest, ext
+d.run
+puts 'Done'
