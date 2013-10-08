@@ -54,7 +54,7 @@ class Drudje
 		parts = arg_str.scan(/(?:"(?:\\.|[^"])*"|[^" ])+/)
 		res = {}
 		parts.each{|part|
-			key, val = part.split('=')
+			key, eq, val = part.partition('=')
 			res[key] = unquote(val)
 		}
 		res

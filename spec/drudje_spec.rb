@@ -59,6 +59,10 @@ describe Drudje do
 			res = @drudje.get_args "template\n\n<h1>hi</h1>"
 			res.should == {'contents' => "<h1>hi</h1>"}
 		end
+		it "should handle quoted arguments with = in them" do
+			res = @drudje.get_args 'template url="/page?z=1"'
+			res.should == {'url' => '/page?z=1'}
+		end
 	end
 
 	describe "#output_file" do
