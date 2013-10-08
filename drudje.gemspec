@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
 	s.name = 'drudje'
-	s.version = '0.0.0'
+	s.version = '0.0.1'
 	s.date = '2013-10-08'
 	s.summary = 'drudje'
 	s.description = 'A simple text file templating tool'
