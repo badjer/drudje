@@ -27,6 +27,17 @@ extension is an optional param and defaults to '.html' Only files in
 sourcedir with that extension will be processed.
 
 
+Oftentimes, you'll want to continously re-run drudje when the template 
+directory changes. I use rerun for this. To install re-run, go
+
+    gem install rerun
+		rbenv rehash
+
+Then, run it:
+
+    rerun -x -d sourcedir -- drudje sourcedir destdir
+
+
 Template format
 ======
 
