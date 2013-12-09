@@ -1,11 +1,31 @@
 #!/usr/bin/env ruby
-
+require 'optparse'
 require_relative '../lib/drudje.rb'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = 'Usage: drudje [options] source-dir dest-dir'
+
+  opts.on('-l lib-dir', '--lib', 'Use template library') do |l|
+    options[:lib] = l
+  end
+  options[:recursive] = false
+  opts.on('-r', '--recursive', 'Recursive') do |r|
+    options[:recursive] = r
+  end
+  options[:extension] = 'html'
+  opts.on('-e' '--extension', 'File extension to handle') do |e|
+    options[:extension] = e
+  end
+end.parse!
+
+puts options
 src = ARGV[0]
 dest = ARGV[1]
-ext = ARGV[2] || '.html'
 
-puts 'Processing ' + src + '/*' + ext + ' to ' + dest
-d = Drudje.new src, dest, ext
+extension = options[:extension]
+pattern = File.join(src, (options[:recursive] ? '**/*.' : '*.') + extension)
+d = Drudje.new src, dest, extension, options[:lib], pattern
+puts 'Processing ' + pattern + ' to ' + dest
 d.run
 puts 'Done'

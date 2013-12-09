@@ -3,12 +3,15 @@ require_relative 'drudje_io.rb'
 class Drudje
 	# TODO: Separate file access to separate object
 	# so that we can test everything
-	attr_accessor :src, :dest, :extension, :io
-	def initialize(src, dest, ext)
+	attr_accessor :src, :dest, :extension, :io, :lib, :pattern
+	def initialize(src, dest, ext, lib, pattern)
+    lib = src if lib == nil
 		@extension = ext
-		@src = src
-		@dest = dest
+    @src = src.end_with?('/') ? src.chomp('/') : src
+    @dest = dest.end_with?('/') ? dest.chomp('/') : dest
 		@io = DrudjeIo.new
+    @lib = lib
+    @pattern = pattern || File.join(src, '*.' + extension)
 	end
 
 	def render(template, args)
@@ -62,12 +65,20 @@ class Drudje
 
 	def template_file(call_str)
 		parts = call_str.strip.partition(/[\s\n\r]+/)
-		File.join self.src, parts[0] + self.extension
+		File.join self.lib, parts[0] + '.' + self.extension
 	end
 
 	def output_file(file)
+    path = File.dirname file
+    if path =~ Regexp.new("\/" + self.src + "\/")
+      destpath = path.gsub Regexp.new("\/" + self.src + "\/"), "/" + self.dest + "/"
+    elsif path =~ Regexp.new("^" + self.src + "\/")
+      destpath = path.gsub Regexp.new("^" + self.src + "\/"), self.dest + "/"
+    else
+      destpath = self.dest
+    end
 		base = File.basename file
-		File.join self.dest, base
+		File.join destpath, base
 	end
 
 	def expand(call_str)
@@ -90,13 +101,14 @@ class Drudje
 	end
 
 	def run
-		pattern = File.join self.src, '*' + self.extension
-		files = Dir.glob(pattern)
+		files = Dir.glob(self.pattern)
+    puts "No files found matching " + self.pattern.to_s if files.length == 0
 		files.each do |file|
-			puts "Processing file " + file
+      outfile = output_file(file)
+			puts 'Processing file ' + file + ' to ' + outfile
 			contents = self.io.read file
 			processed = process contents
-			self.io.write output_file(file), processed
+			self.io.write outfile, processed
 		end
 	end
 end

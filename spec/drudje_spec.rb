@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Drudje do
 	before :each do
-		@drudje = Drudje.new('src', 'dest', '.html')
+		@drudje = Drudje.new('src', 'dest', 'html', nil, nil)
 	end
 
 	describe "#new" do
@@ -78,6 +78,31 @@ describe Drudje do
 			res = @drudje.output_file 'src/template.html'
 			res.should == 'dest/template.html'
 		end
+
+    context "recursive" do
+      it "should figure out a recursive destination path" do
+        res = @drudje.output_file 'src/views/home/index.html'
+        res.should == 'dest/views/home/index.html'
+      end
+
+      it "should work with wierd characters in path" do
+        @drudje = Drudje.new('../example/src', '../example/dest', 'html', nil, nil)
+        res = @drudje.output_file '../example/src/home/index.html'
+        res.should == '../example/dest/home/index.html'
+      end
+
+      it "should work with inconsistent path endings" do
+        @drudje = Drudje.new('../example/src/', '../example/dest', 'html', nil, nil)
+        res = @drudje.output_file '../example/src/home/index.html'
+        res.should == '../example/dest/home/index.html'
+      end
+
+      it "should work with inconsistent path endings 2" do
+        @drudje = Drudje.new('../example/src', '../example/dest/', 'html', nil, nil)
+        res = @drudje.output_file '../example/src/home/index.html'
+        res.should == '../example/dest/home/index.html'
+      end
+    end
 	end
 
 
@@ -98,6 +123,17 @@ describe Drudje do
 			res = @drudje.template_file "template\n<br/>"
 			res.should == 'src/template.html'
 		end
+
+    context "with lib" do
+      before(:each) do
+        @drudje = Drudje.new('src', 'dest', 'html', 'lib', nil)
+      end
+
+      it "should be lib path + call name" do
+        res = @drudje.template_file "template"
+        res.should == 'lib/template.html'
+      end
+    end
 	end
 
 	describe "#render" do
