@@ -87,8 +87,35 @@ class Drudje
 		render template, args
 	end
 
+  def find_call_loc(str, cstart = 0, cend = str.length)
+    group_start = str.index('[[', cstart)
+    group_end = str.rindex(']]', cend)
+    return nil if !group_start || !group_end
+
+    # We want group_end to point to the last ], not the first
+    group_end = group_end + 1
+
+    call_start = group_start + 2
+    call_end = group_end - 2
+    length = call_end - call_start + 1
+    substr = str[call_start, length]
+    # Make sure the substring doesn't have more calls nested
+    if substr =~ /\[\[/
+      find_call_loc(str, call_start, group_end)
+    elsif substr =~ /\]\]/
+      find_call_loc(str, group_start, call_end)
+    else
+      [group_start, group_end]
+    end
+  end
+
 	def process_pass(str)
-		str.gsub(/\[\[([^\[\]]+)\]\]/){ expand($1) }
+    call_loc = find_call_loc(str)
+    return str if !call_loc
+    before = str[0, call_loc[0]]
+    during = str[call_loc[0]+2..call_loc[1]-2]
+    after = str[call_loc[1]+1,str.length]
+    before + expand(during) + after
 	end
 
 	def process(str)

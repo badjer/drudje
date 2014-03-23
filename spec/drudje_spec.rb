@@ -206,6 +206,16 @@ describe Drudje do
 			res = @drudje.process '<p>[[small [[small <br/>]] ]]</p>'
 			res.should == '<p><small><small><br/></small></small></p>'
 		end
+
+    it "should handle interior [" do
+      res = @drudje.process '[[small hi [name] ]]'
+      res.should == '<small>hi [name]</small>'
+    end
+
+    it "should handle interior ]" do
+      res = @drudje.process '[[small hi ]name[]]'
+      res.should == '<small>hi ]name[</small>'
+    end
 	end
 	
 end
